@@ -1,9 +1,7 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import 'dotenv/config.js';
 import cors from 'cors';
 import pino from 'pino-http';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -36,8 +34,7 @@ app.use((req, res) => {
 //Обробка помилок
 app.use((err, req, res, next) => {
   res.status(500).json({
-    message: 'Simulated server error',
-    error: err.message,
+    message: err.message,
   });
 });
 

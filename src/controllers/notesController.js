@@ -2,32 +2,26 @@ import createHttpError from 'http-errors';
 import { Note } from '../models/note.js';
 
 export const getAllNotes = async (req, res) => {
-  // Отримуємо параметри пагінації
   const { page = 1, perPage = 10, tag, search } = req.query;
   const skip = (page - 1) * perPage;
-
-  // Створюємо базовий запит до колекції
   const notesQuery = Note.find({ userId: req.user._id });
 
-  // Будуємо фільтр
   if (tag) {
     notesQuery.where('tag').equals(tag);
   }
+
   if (search) {
     notesQuery.where({
       $text: { $search: search },
     });
   }
 
-  // Виконуємо одразу два запити паралельно
   const [totalNotes, notes] = await Promise.all([
     notesQuery.clone().countDocuments(),
     notesQuery.skip(skip).limit(perPage),
   ]);
 
-  // Обчислюємо загальну кількість сторінок
   const totalPages = Math.ceil(totalNotes / perPage);
-  // const notes = await Note.find();
   res.status(200).json({
     page,
     perPage,
@@ -48,6 +42,7 @@ export const getNoteById = async (req, res, next) => {
     next(createHttpError(404, 'Note not found'));
     return;
   }
+
   res.status(200).json(note);
 };
 
@@ -56,6 +51,7 @@ export const createNote = async (req, res) => {
     ...req.body,
     userId: req.user._id,
   });
+
   res.status(201).json(note);
 };
 
@@ -70,6 +66,7 @@ export const deleteNote = async (req, res, next) => {
     next(createHttpError(404, 'Note not found'));
     return;
   }
+
   res.status(200).json(note);
 };
 
@@ -85,5 +82,6 @@ export const updateNote = async (req, res, next) => {
     next(createHttpError(404, 'Note not found'));
     return;
   }
+
   res.status(200).json(note);
 };

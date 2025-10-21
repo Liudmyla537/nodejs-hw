@@ -16,6 +16,11 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      type: String,
+      required: false,
+      default: '<https://ac.goit.global/fullstack/react/default-avatar.jpg>',
+    },
   },
   {
     timestamps: true,
@@ -30,7 +35,6 @@ userSchema.pre('save', function (next) {
   next();
 });
 
-//Перевизначення методу toJSON, щоб не повертати пароль у відповіді
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;
